@@ -1,0 +1,98 @@
+---
+output: rmarkdown::github_document
+---
+
+### 3. Confirme cuantas observaciones por nivel de cobertura existen
+``` {r}
+setwd("~/biome2/tp1")
+datos  <- read.delim("datos_libreta_42515.txt", sep=" ")
+table(datos$Cob)
+```
+
+
+### 4. Realice un grafico de dispersion de Y ~ X
+``` {r}
+plot(datos)
+```
+
+### 5. Plantee el modelo en parametros
+Regresion lineal
+
+- `beta0` = Ordenada al origen. Valor esperado de rendimiento cuando la cobertura = 0
+- `beta1` = Pendiente. Incremento en kg/ha por incremento de 1 unidad de cobertura
+
+``` {r}
+m <- lm(Rend~Cob, data=datos)
+m
+```
+
+### 6. Enuncie los supuestos del modelo
+
+**Residuos: la diferencia entre el valor observado y el valor de la recta de regresion.**
+
+#### Linealidad
+La relacion entre rendimiento y cobertura es lineal.
+
+``` {r}
+plot(datos)
+```
+
+#### Independencia
+Los residuos son independientes y no tienen correlacion.
+
+
+#### Normalidad
+Los residuos siguen una distribucion normal.
+
+H0: los residuos siguen una distribucion normal
+
+``` {r}
+shapiro.test(m$residuals)
+```
+
+No se rechaza H0.
+
+
+#### Homocedasticidad
+La varianza de los residuos no se incrementa con los valores ajustados de la variable respuesta (rendimiento), es constante.
+
+``` {r}
+par(mfrow=c(2,2))
+plot(m)
+```
+
+Ver grafico de arriba a la izquierda, residuos vs valores ajustados por la recta (valor de rendimiento estimado para dada cobertura)
+
+
+### 7. Estime beta 0 y beta 1 del modelo. Calcule el intervalo de confianza para la pendiente e interpretelo.
+
+
+``` {r}
+m
+```
+
+- `beta0` = 772.90
+- `beta1` = 21.48
+
+``` {r}
+confint(m)
+```
+
+## 8. Cual es el R2 del modelo? Interprete el valor. Vuelque el valor en la planilla
+
+``` {r}
+summary(m)
+```
+
+```
+Multiple R-squared:  0.4102, Adjusted R-squared:  0.4018 
+```
+
+----------------------------------
+
+``` {r}
+library(ggplot2)
+ggplot(datos, aes(x=Cob, y=Rend)) + 
+  geom_point(color="black", size = 4) + 
+  geom_smooth(method=lm, color="red")
+```
